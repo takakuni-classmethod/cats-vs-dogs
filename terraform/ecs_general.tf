@@ -62,3 +62,58 @@ resource "aws_ecs_cluster_capacity_providers" "cluster" {
     capacity_provider = "FARGATE"
   }
 }
+
+######################################
+# ECS Task Configuration
+######################################
+resource "aws_iam_role" "task_exec" {
+  name               = "${local.prefix}-task-exec-role"
+  assume_role_policy = file("${path.module}/iam_policy_document/assume_ecs_task.json")
+
+  tags = {
+    Name = "${local.prefix}-task-exec-role"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "task_exec_managed" {
+  role       = aws_iam_role.task_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_policy" "task_exec" {
+  name   = "${local.prefix}-task-exec-policy"
+  policy = file("${path.module}/iam_policy_document/iam_task_exec.json")
+
+  tags = {
+    Name = "${local.prefix}-task-exec-policy"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "task_exec_custom" {
+  role       = aws_iam_role.task_exec.name
+  policy_arn = aws_iam_policy.task_exec.arn
+}
+
+resource "aws_iam_role" "task" {
+  name               = "${local.prefix}-task-role"
+  assume_role_policy = file("${path.module}/iam_policy_document/assume_ecs_task.json")
+
+  tags = {
+    Name = "${local.prefix}-task-role"
+  }
+}
+
+resource "aws_iam_policy" "task_log" {
+  name   = "${local.prefix}-task-log-router-policy"
+  policy = file("${path.module}/iam_policy_document/iam_task_log_router.json")
+
+  tags = {
+    Name = "${local.prefix}-task-log-router-policy"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "task_log" {
+  role       = aws_iam_role.task.name
+  policy_arn = aws_iam_policy.task_log.arn
+}
+
