@@ -64,7 +64,7 @@ resource "aws_ecs_cluster_capacity_providers" "cluster" {
 }
 
 ######################################
-# ECS Task Configuration
+# ECS Task Roles Configuration
 ######################################
 resource "aws_iam_role" "task_exec" {
   name               = "${local.prefix}-task-exec-role"
@@ -78,20 +78,6 @@ resource "aws_iam_role" "task_exec" {
 resource "aws_iam_role_policy_attachment" "task_exec_managed" {
   role       = aws_iam_role.task_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-resource "aws_iam_policy" "task_exec" {
-  name   = "${local.prefix}-task-exec-policy"
-  policy = file("${path.module}/iam_policy_document/iam_task_exec.json")
-
-  tags = {
-    Name = "${local.prefix}-task-exec-policy"
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "task_exec_custom" {
-  role       = aws_iam_role.task_exec.name
-  policy_arn = aws_iam_policy.task_exec.arn
 }
 
 resource "aws_iam_role" "task" {
@@ -116,4 +102,3 @@ resource "aws_iam_role_policy_attachment" "task_log" {
   role       = aws_iam_role.task.name
   policy_arn = aws_iam_policy.task_log.arn
 }
-
