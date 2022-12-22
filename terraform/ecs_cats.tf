@@ -131,7 +131,7 @@ resource "aws_ecs_task_definition" "cats" {
   container_definitions = templatefile("${path.module}/task_definition/cats.json", {
     region = data.aws_region.current.name
 
-    cats_image_url = data.aws_ecr_repository.cats.repository_url
+    cats_image_url = aws_ecr_repository.cats.repository_url
     cats_log_group_name = aws_cloudwatch_log_group.cats.name
     cats_log_stream_prefix = "fluentbit-"
 
