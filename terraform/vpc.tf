@@ -196,58 +196,58 @@ resource "aws_security_group" "vpce" {
 ######################################
 # To Launch Fargate Task
 ######################################
-# resource "aws_vpc_endpoint" "ecr_api" {
-#   vpc_id              = aws_vpc.vpc.id
-#   vpc_endpoint_type   = "Interface"
-#   service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
-#   security_group_ids  = [aws_security_group.vpce.id]
-#   subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
-#   policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
-#   private_dns_enabled = true
+resource "aws_vpc_endpoint" "ecr_api" {
+  vpc_id              = aws_vpc.vpc.id
+  vpc_endpoint_type   = "Interface"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
+  security_group_ids  = [aws_security_group.vpce.id]
+  subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
+  policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
+  private_dns_enabled = true
 
-#   tags = {
-#     Name = "${local.prefix}-ecr-api-vpce"
-#   }
-# }
+  tags = {
+    Name = "${local.prefix}-ecr-api-vpce"
+  }
+}
 
-# resource "aws_vpc_endpoint" "ecr_dkr" {
-#   vpc_id              = aws_vpc.vpc.id
-#   vpc_endpoint_type   = "Interface"
-#   service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
-#   security_group_ids  = [aws_security_group.vpce.id]
-#   subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
-#   policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
-#   private_dns_enabled = true
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  vpc_id              = aws_vpc.vpc.id
+  vpc_endpoint_type   = "Interface"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
+  security_group_ids  = [aws_security_group.vpce.id]
+  subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
+  policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
+  private_dns_enabled = true
 
-#   tags = {
-#     Name = "${local.prefix}-ecr-dkr-vpce"
-#   }
-# }
+  tags = {
+    Name = "${local.prefix}-ecr-dkr-vpce"
+  }
+}
 
-# resource "aws_vpc_endpoint" "logs" {
-#   vpc_id              = aws_vpc.vpc.id
-#   vpc_endpoint_type   = "Interface"
-#   service_name        = "com.amazonaws.${data.aws_region.current.name}.logs"
-#   security_group_ids  = [aws_security_group.vpce.id]
-#   subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
-#   policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
-#   private_dns_enabled = true
+resource "aws_vpc_endpoint" "logs" {
+  vpc_id              = aws_vpc.vpc.id
+  vpc_endpoint_type   = "Interface"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.logs"
+  security_group_ids  = [aws_security_group.vpce.id]
+  subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
+  policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
+  private_dns_enabled = true
 
-#   tags = {
-#     Name = "${local.prefix}-logs-vpce"
-#   }
-# }
+  tags = {
+    Name = "${local.prefix}-logs-vpce"
+  }
+}
 
-# resource "aws_vpc_endpoint" "kms" {
-#   vpc_id              = aws_vpc.vpc.id
-#   vpc_endpoint_type   = "Interface"
-#   service_name        = "com.amazonaws.${data.aws_region.current.name}.kms"
-#   security_group_ids  = [aws_security_group.vpce.id]
-#   subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
-#   policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
-#   private_dns_enabled = true
+resource "aws_vpc_endpoint" "kms" {
+  vpc_id              = aws_vpc.vpc.id
+  vpc_endpoint_type   = "Interface"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.kms"
+  security_group_ids  = [aws_security_group.vpce.id]
+  subnet_ids          = [aws_subnet.isolate_a.id, aws_subnet.isolate_c.id]
+  policy              = file("${path.module}/iam_policy_document/vpc_endpoint_default.json")
+  private_dns_enabled = true
 
-#   tags = {
-#     Name = "${local.prefix}-kms-vpce"
-#   }
-# }
+  tags = {
+    Name = "${local.prefix}-kms-vpce"
+  }
+}

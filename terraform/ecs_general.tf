@@ -102,3 +102,10 @@ resource "aws_iam_role_policy_attachment" "task_log" {
   role       = aws_iam_role.task.name
   policy_arn = aws_iam_policy.task_log.arn
 }
+
+######################################
+# Stable FireLens Image URL
+######################################
+data "aws_ssm_parameter" "firelens_image_url" {
+  name = "/aws/service/aws-for-fluent-bit/stable"
+}

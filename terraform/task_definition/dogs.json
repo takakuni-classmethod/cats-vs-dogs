@@ -1,0 +1,43 @@
+[
+  {
+    "name": "dogs",
+    "essential": true,
+    "image": "${dogs_image_url}",
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "hostPort": 80,
+        "protocol": "tcp"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awsfirelens",
+      "options": {
+        "Name": "cloudwatch_logs",
+        "region": "${region}",
+        "log_group_name": "${dogs_log_group_name}",
+        "log_stream_prefix": "${dogs_log_stream_prefix}",
+        "log_key": "log"
+      }
+    }
+  },
+  {
+    "name": "firelens",
+    "essential": true,
+    "image": "${firelens_image_url}",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${firelens_log_group_name}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "${firelens_log_stream_prefix}"
+      }
+    },
+    "firelensConfiguration": {
+      "type": "fluentbit",
+      "options": {
+        "enable-ecs-log-metadata": "true"
+      }
+    }
+  }
+]
