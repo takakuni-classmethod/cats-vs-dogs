@@ -121,8 +121,6 @@ resource "aws_ecs_task_definition" "web" {
   family = "${local.prefix}-web-td"
   requires_compatibilities = [ "FARGATE" ]
   network_mode = "awsvpc"
-
-  task_role_arn = aws_iam_role.task.arn
   execution_role_arn = aws_iam_role.task_exec.arn
 
   memory = 512
@@ -132,12 +130,8 @@ resource "aws_ecs_task_definition" "web" {
     region = data.aws_region.current.name
 
     web_image_url = data.aws_ecr_repository.web.repository_url
-    web_log_group_name = aws_cloudwatch_log_group.web.name
-    web_log_stream_prefix = "fluentbit-"
-
-    firelens_image_url = data.aws_ssm_parameter.firelens_image_url.value
-    firelens_log_group_name = aws_cloudwatch_log_group.web_log_router.name
-    firelens_log_stream_prefix = "fluentbit"
+    log_group_name = aws_cloudwatch_log_group.web.name
+    log_stream_prefix = "awslogs"
   })
 
   lifecycle {
@@ -159,7 +153,6 @@ resource "aws_ecs_service" "web" {
 
   network_configuration {
     security_groups = [aws_security_group.web.id]
-    # subnets = [aws_subnet.public_a.id, aws_subnet.public_c.id]
     subnets = [aws_subnet.private_a.id, aws_subnet.private_c.id]
     assign_public_ip = true
   }

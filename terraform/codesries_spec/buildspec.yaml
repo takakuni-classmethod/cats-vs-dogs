@@ -1,0 +1,40 @@
+version: 0.2
+env:
+  variables:
+    DOCKER_BUILDKIT: "1"
+    AWS_PAGER: ""
+phases:
+  pre_build:
+    commands:
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Cats Docker image...
+      - docker image build -f cats/Dockerfile -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CATS_ECR_REPOSITORY_NAME:$IMAGE_TAG cats
+      - echo Building the Dogs Docker image...
+      - docker image build -f dogs/Dockerfile -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOGS_ECR_REPOSITORY_NAME:$IMAGE_TAG dogs
+      - echo Building the Web Docker image...
+      - docker image build -f web/Dockerfile -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$WEB_ECR_REPOSITORY_NAME:$IMAGE_TAG web
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - codebuild-breakpoint
+      - echo Pushing the Cats Docker image...
+      - docker image push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CATS_ECR_REPOSITORY_NAME:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"cats","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$CATS_ECR_REPOSITORY_NAME:$IMAGE_TAG > imagedefinitions_cats.json
+      - echo Pushing the Dogs Docker image...
+      - docker image push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOGS_ECR_REPOSITORY_NAME:$IMAGE_TAG
+      - printf '[{"name":"dogs","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOGS_ECR_REPOSITORY_NAME:$IMAGE_TAG > imagedefinitions_dogs.json
+      - echo Pushing the Web Docker image...
+      - docker image push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$WEB_ECR_REPOSITORY_NAME:$IMAGE_TAG
+      - printf '[{"name":"web","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$WEB_ECR_REPOSITORY_NAME:$IMAGE_TAG > imagedefinitions_web.json
+artifacts:
+  files:
+    - imagedefinitions_cats.json
+    - imagedefinitions_dogs.json
+    - imagedefinitions_web.json

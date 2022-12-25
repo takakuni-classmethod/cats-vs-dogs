@@ -110,10 +110,6 @@ resource "aws_lb_listener_rule" "dogs" {
   }
 }
 
-data "aws_ecr_repository" "dogs" {
-  name = "dogs"
-}
-
 ######################################
 # Task Definition Configuration
 ######################################
@@ -121,8 +117,6 @@ resource "aws_ecs_task_definition" "dogs" {
   family = "${local.prefix}-dogs-td"
   requires_compatibilities = [ "FARGATE" ]
   network_mode = "awsvpc"
-
-  task_role_arn = aws_iam_role.task.arn
   execution_role_arn = aws_iam_role.task_exec.arn
 
   memory = 512
@@ -131,13 +125,9 @@ resource "aws_ecs_task_definition" "dogs" {
   container_definitions = templatefile("${path.module}/task_definition/dogs.json", {
     region = data.aws_region.current.name
 
-    dogs_image_url = data.aws_ecr_repository.dogs.repository_url
-    dogs_log_group_name = aws_cloudwatch_log_group.dogs.name
-    dogs_log_stream_prefix = "fluentbit-"
-
-    firelens_image_url = data.aws_ssm_parameter.firelens_image_url.value
-    firelens_log_group_name = aws_cloudwatch_log_group.dogs_log_router.name
-    firelens_log_stream_prefix = "fluentbit"
+    dogs_image_url = aws_ecr_repository.dogs.repository_url
+    log_group_name = aws_cloudwatch_log_group.dogs.name
+    log_stream_prefix = "awslogs"
   })
 
   lifecycle {
@@ -159,7 +149,6 @@ resource "aws_ecs_service" "dogs" {
 
   network_configuration {
     security_groups = [aws_security_group.dogs.id]
-    # subnets = [aws_subnet.public_a.id, aws_subnet.public_c.id]
     subnets = [aws_subnet.private_a.id, aws_subnet.private_c.id]
     assign_public_ip = true
   }

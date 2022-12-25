@@ -121,8 +121,6 @@ resource "aws_ecs_task_definition" "cats" {
   family = "${local.prefix}-cats-td"
   requires_compatibilities = [ "FARGATE" ]
   network_mode = "awsvpc"
-
-  task_role_arn = aws_iam_role.task.arn
   execution_role_arn = aws_iam_role.task_exec.arn
 
   memory = 512
@@ -132,12 +130,8 @@ resource "aws_ecs_task_definition" "cats" {
     region = data.aws_region.current.name
 
     cats_image_url = aws_ecr_repository.cats.repository_url
-    cats_log_group_name = aws_cloudwatch_log_group.cats.name
-    cats_log_stream_prefix = "fluentbit-"
-
-    firelens_image_url = data.aws_ssm_parameter.firelens_image_url.value
-    firelens_log_group_name = aws_cloudwatch_log_group.cats_log_router.name
-    firelens_log_stream_prefix = "fluentbit"
+    log_group_name = aws_cloudwatch_log_group.cats.name
+    log_stream_prefix = "awslogs"
   })
 
   lifecycle {

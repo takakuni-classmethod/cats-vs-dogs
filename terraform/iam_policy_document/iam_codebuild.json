@@ -29,20 +29,27 @@
       "Resource": "*"
     },
     {
-      "Sid": "ECRPullPolicy",
+      "Sid": "EcrPushImage",
       "Effect": "Allow",
       "Action": [
+        "ecr:CompleteLayerUpload",
+        "ecr:GetAuthorizationToken",
+        "ecr:UploadLayerPart",
+        "ecr:InitiateLayerUpload",
         "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage"
+        "ecr:PutImage"
       ],
       "Resource": "*"
     },
     {
-      "Sid": "ECRAuthPolicy",
+      "Sid": "Artifact",
       "Effect": "Allow",
       "Action": [
-        "ecr:GetAuthorizationToken"
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
       ],
       "Resource": "*"
     }
