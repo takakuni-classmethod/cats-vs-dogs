@@ -38,10 +38,10 @@ resource "aws_ecr_repository" "cats" {
   }
 }
 
-# あとでやる
-# resource "aws_ecr_lifecycle_policy" "cats" {
-#   repository = aws_ecr_repository.cats.id
-# }
+resource "aws_ecr_lifecycle_policy" "cats" {
+  repository = aws_ecr_repository.cats.id
+  policy = file("${path.module}/ecr_lifecycle/lifecycle.json")
+}
 
 ######################################
 # ECR Repository Configuration Dogs
@@ -65,6 +65,11 @@ resource "aws_ecr_repository" "dogs" {
   }
 }
 
+resource "aws_ecr_lifecycle_policy" "dogs" {
+  repository = aws_ecr_repository.dogs.id
+  policy = file("${path.module}/ecr_lifecycle/lifecycle.json")
+}
+
 ######################################
 # ECR Repository Configuration Web
 ######################################
@@ -85,4 +90,9 @@ resource "aws_ecr_repository" "web" {
   tags = {
     Name = "${local.prefix}-web-repo"
   }
+}
+
+resource "aws_ecr_lifecycle_policy" "web" {
+  repository = aws_ecr_repository.web.id
+  policy = file("${path.module}/ecr_lifecycle/lifecycle.json")
 }
