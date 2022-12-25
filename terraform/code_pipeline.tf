@@ -1,4 +1,12 @@
 ######################################
+# GitHub(CodeStar) Configuration
+######################################
+resource "aws_codestarconnections_connection" "github" {
+  name = "${local.prefix}-connection"
+  provider_type = "GitHub"
+}
+
+######################################
 # CodeBuild Configuration
 ######################################
 resource "aws_iam_role" "codebuild" {
@@ -92,6 +100,9 @@ resource "aws_codebuild_project" "codebuild" {
   }
 }
 
+######################################
+# CodePipeline Configuration
+######################################
 resource "aws_iam_role" "codepipeline" {
   name = "${local.prefix}-codepipeline-role"
   assume_role_policy = file("${path.module}/iam_policy_document/assume_codepipeline.json")
@@ -164,10 +175,6 @@ resource "aws_s3_bucket_public_access_block" "artifact" {
   block_public_policy     = true
 }
 
-data "aws_codestarconnections_connection" "github" {
-  name = "cats-vs-dogs"
-}
-
 resource "aws_codepipeline" "pipeline" {
   name = "${local.prefix}-pipeline"
   role_arn = aws_iam_role.codepipeline.arn
@@ -195,7 +202,7 @@ resource "aws_codepipeline" "pipeline" {
       version = 1
 
       configuration = {
-        ConnectionArn = data.aws_codestarconnections_connection.github.arn
+        ConnectionArn = aws_codestarconnections_connection.github.arn
         BranchName = "main"
         FullRepositoryId = var.repository_id
         OutputArtifactFormat = "CODE_ZIP"
