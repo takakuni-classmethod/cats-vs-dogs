@@ -22,7 +22,6 @@ resource "aws_kms_alias" "ecr" {
 resource "aws_ecr_repository" "cats" {
   name = "${local.prefix}-cats-repo"
   image_tag_mutability = "IMMUTABLE"
-  # image_tag_mutability = "MUTABLE"
   force_delete = true
 
   encryption_configuration {
@@ -50,7 +49,6 @@ resource "aws_ecr_repository" "cats" {
 resource "aws_ecr_repository" "dogs" {
   name = "${local.prefix}-dogs-repo"
   image_tag_mutability = "IMMUTABLE"
-  # image_tag_mutability = "MUTABLE"
   force_delete = true
 
   encryption_configuration {
@@ -73,7 +71,6 @@ resource "aws_ecr_repository" "dogs" {
 resource "aws_ecr_repository" "web" {
   name = "${local.prefix}-web-repo"
   image_tag_mutability = "IMMUTABLE"
-  # image_tag_mutability = "MUTABLE"
   force_delete = true
 
   encryption_configuration {

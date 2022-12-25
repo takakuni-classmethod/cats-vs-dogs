@@ -159,6 +159,11 @@ resource "aws_ecs_service" "dogs" {
     container_port = 80
   }
 
+  deployment_circuit_breaker {
+    enable = true
+    rollback = true
+  }
+
   tags = {
     Name = "${local.prefix}-dogs-service"
   }
